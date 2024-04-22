@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flappy American Plane</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background-image: url('america_background.jpg'); /* Add your background image */
+        background-size: cover;
+    }
+
+    canvas {
+        display: block;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .twin-tower {
+        position: absolute;
+        background-image: url('twin_towers.png'); /* Add your twin tower image */
+        background-size: contain;
+        width: 100px; /* Adjust size as needed */
+        height: 400px; /* Adjust size as needed */
+        bottom: 0;
+    }
+</style>
+</head>
+<body>
+<div class="twin-tower" style="left: 200px;"></div>
+<div class="twin-tower" style="right: 200px;"></div>
+<canvas id="canvas" width="480" height="640"></canvas>
+<script>
+    // Get canvas element
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // American plane properties
+    let planeImg = new Image();
+    planeImg.src = "american_plane.png"; // Add your American plane image
+    let planeWidth = 60; // Adjust plane width
+    let planeHeight = 40; // Adjust plane height
+    let planeX = 50;
+    let planeY = canvas.height / 2 - planeHeight / 2;
+
+    // Twin towers properties
+    let towerWidth = 100; // Adjust tower width
+    let towerHeight = 400; // Adjust tower height
+    let towerGap = 200; // Adjust gap between towers
+    let towerSpeed = 2;
+    let towerX = canvas.width;
+
+    // Score
+    let score = 0;
+
+    // Function to draw American plane
+    function drawPlane() {
+        ctx.drawImage(planeImg, planeX, planeY, planeWidth, planeHeight);
+    }
+
+    // Function to draw twin towers
+    function drawTowers() {
+        ctx.fillStyle = "#000"; // Adjust color if needed
+        ctx.fillRect(towerX, 0, towerWidth, towerHeight);
+        ctx.fillRect(towerX, canvas.height - towerHeight - towerGap, towerWidth, towerHeight);
+    }
+
+    // Function to move twin towers
+    function moveTowers() {
+        towerX -= towerSpeed;
+        if (towerX + towerWidth < 0) {
+            towerX = canvas.width;
+            score++;
+        }
+    }
+
+    // Function to check collisions
+    function checkCollisions() {
+        if (planeY + planeHeight > canvas.height || planeY < 0) {
+            gameOver();
+        }
+        if (planeX + planeWidth > towerX && planeX < towerX + towerWidth &&
+            (planeY < towerHeight || planeY + planeHeight > canvas.height - towerHeight - towerGap)) {
+            gameOver();
+        }
+    }
+
+    // Function to handle game over
+    function gameOver() {
+        alert("Game Over! Your score: " + score);
+        location.reload(); // Reload the page to restart the game
+    }
+
+    // Function to update game state
+    function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawTowers();
+        drawPlane();
+        moveTowers();
+        checkCollisions();
+
+        requestAnimationFrame(update);
+    }
+
+    // Event listener for plane jump
+    window.addEventListener("keydown", function (e) {
+        if (e.code === "Space") {
+            planeY -= 50; // Adjust jump height
+        }
+    });
+
+    // Start the game loop
+    update();
+</script>
+</body>
+</html>
